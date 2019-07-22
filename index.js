@@ -9,7 +9,6 @@ var util = require('util');
 var async = require('async');
 var msRestAzure = require('@azure/ms-rest-nodeauth');
 var ResourceManagementClient = require('@azure/arm-resources-profile-hybrid-2019-03-01').ResourceManagementClient;
-//var KeyvaultManagementClient = require('@azure/arm-keyvault-profile-2019-03-01-hybrid').KeyvaultManagementClient;
 const request = require('request');
 const https = require('https');
 const fetch = require("node-fetch");
@@ -27,11 +26,6 @@ var randomIds = {};
 var location = 'westus2';
 var resourceGroupName = _generateRandomId('testrg', randomIds);
 var resourceName = _generateRandomId('testresource', randomIds);
-
-//var resourceProviderNamespace = 'Microsoft.KeyVault';
-//var parentResourcePath = '';
-//var resourceType = 'vaults';
-//var apiVersion = '2015-06-01';
 
 // create a map
 var map = {};
@@ -80,9 +74,7 @@ function main() {
     map["validateAuthority"] = "false"
     Environment.Environment.add(map);
 
-
-
-    var tokenAudience = map["activeDirectoryResourceId"] // 'https://adminmanagement.adfs.v.masd.stbtest.microsoft.com/166c49bb-cb48-4e80-abe9-d1e22c495aa5';
+    var tokenAudience = map["activeDirectoryResourceId"] 
 
     var options = {};
     options["environment"] = Environment.Environment.AzureStack;
@@ -97,7 +89,6 @@ function main() {
       var clientOptions = {};
       clientOptions["baseUri"] = base_url;
       resourceClient = new ResourceManagementClient(credentials, subscriptionId, clientOptions);
-      //keyvaultClient = new KeyvaultManagementClient(credentials, subscriptionId, clientOptions);
 
       // Work flow of this sample:
       // 1. create a resource group 
@@ -141,27 +132,7 @@ function main() {
             callback(null, result);
           });
         },
-        // function (callback) {
-        //   //Task 4
-        //   createResource(function (err, result, request, response) {
-        //     if (err) {
-        //       return callback(err);
-        //     }
-        //     console.log(util.format('\nCreated a Key Vault resource in Resource Groups %s : \n%s',
-        //       resourceGroupName, util.inspect(result, { depth: null })));
-        //     callback(null, result);
-        //   });
-        // },
-        // function (callback) {
-        //   //Task 5
-        //   getResource(function (err, result, request, response) {
-        //     if (err) {
-        //       return callback(err);
-        //     }
-        //     console.log(util.format('\nResource details: \n%s', util.inspect(result, { depth: null })));
-        //     callback(null, result);
-        //   });
-        // },
+      
         function (callback) {
           //Task 6
           exportResourceGroupTemplate(function (err, result, request, response) {
@@ -211,46 +182,7 @@ main();
       console.log('\nUpdating resource group: ' + resourceGroupName);
       return resourceClient.resourceGroups.createOrUpdate(resourceGroupName, groupParameters, callback);
     }
-
-    // function createResource(callback) {
-    //   var keyvaultParameter = {
-    //     location: "westus2",
-    //     properties: {
-    //       sku: {
-    //         family: 'A',
-    //         name: 'standard'
-    //       },
-    //       accessPolicies: [],
-    //       enabledForDeployment: true,
-    //       enabledForTemplateDeployment: true,
-    //       tenantId: tenantId
-    //     },
-    //     tags: {}
-    //   };
-    //   console.log(util.format('\nCreating Key Vault resource %s in resource group %s'),
-    //     resourceName, resourceGroupName);
-    //   return keyvaultClient.resources.createOrUpdate(resourceGroupName,
-    //     resourceProviderNamespace,
-    //     parentResourcePath,
-    //     resourceType,
-    //     resourceName,
-    //     apiVersion,
-    //     keyvaultParameter,
-    //     callback);
-    // }
-
-    // function getResource(callback) {
-    //   console.log(util.format('\nGetting resource %s details in resource group %s'),
-    //     resourceName, resourceGroupName);
-    //   return resourceClient.resources.get(resourceGroupName,
-    //     resourceProviderNamespace,
-    //     parentResourcePath,
-    //     resourceType,
-    //     resourceName,
-    //     apiVersion,
-    //     callback);
-    // }
-
+    
     function exportResourceGroupTemplate(callback) {
       var rgParameter = {
         resources: ['*']
